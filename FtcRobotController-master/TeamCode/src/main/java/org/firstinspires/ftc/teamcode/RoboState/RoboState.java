@@ -17,7 +17,8 @@ public abstract class RoboState {
 
     public abstract void init();
     public abstract void execute();
-    public abstract bool isfinished();    
+    public abstract boolean isfinished();  
+    public abstract void terminate();  
 }
 
 
