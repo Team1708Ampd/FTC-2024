@@ -1,8 +1,8 @@
-package org.firstinspires.teamcode.robostate;
+package org.firstinspires.ftc.teamcode.RoboState;
 
-import java.util;
+// Class managing the collection of robo states
 
-// Class managing the collection of robo states 
+import java.util.List;
 
 public class RoboStateManager {
 
