@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
@@ -9,6 +10,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDir
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
+import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -22,6 +24,7 @@ public class MainTeleopOpMode extends LinearOpMode {
     private DcMotor backRightDrive;
     private DcMotor frontLeftDrive;
     private DcMotor backLeftDrive;
+    private Intake intakeSub;
 
     private VisionPortal visionPortal;
     private AprilTagProcessor aprilTag;
@@ -44,6 +47,10 @@ public class MainTeleopOpMode extends LinearOpMode {
         backRightDrive.setDirection(DcMotorSimple.Direction.FORWARD);
         frontLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        intakeSub.intakeMotor = hardwareMap.get(DcMotor.class, "Intake Motor");
+        intakeSub.intakeLeft = hardwareMap.get(CRServo.class, "Left Intake");
+        intakeSub.intakeRight = hardwareMap.get(CRServo.class, "Right Intake");
 
         double drive;
         double strafe;

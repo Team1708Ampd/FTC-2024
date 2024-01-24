@@ -4,21 +4,16 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-public class Intake extends LinearOpMode {
-    private DcMotor intakeMotor = hardwareMap.get(DcMotor.class,"Intake Motor");
+public class Intake {
+    public DcMotor intakeMotor;
 
-    CRServo intakeleft = hardwareMap.get(CRServo.class,"Left Intake");
-    CRServo intakeright = hardwareMap.get(CRServo.class,"Right Intake");
-    public void setpower (double power) {
+    public CRServo intakeLeft;
+    public CRServo intakeRight;
+    public void setPower (double power) {
         intakeMotor.setPower(power);
     }
-    public void setServopower (double power) {
-        intakeleft.setPower(power);
-        intakeright.setPower(power);
-    }
-
-    @Override
-    public void runOpMode() throws InterruptedException {
-
+    public void setServoPower (double power) {
+        intakeLeft.setPower(power);
+        intakeRight.setPower(power);
     }
 }
