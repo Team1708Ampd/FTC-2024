@@ -11,7 +11,9 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.teamcode.subsystems.Claw;
+import org.firstinspires.ftc.teamcode.subsystems.Climb;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
+import org.firstinspires.ftc.teamcode.subsystems.Plane;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -27,6 +29,8 @@ public class MainTeleopOpMode extends LinearOpMode {
     private DcMotor backLeftDrive;
     private Intake intakeSub = new Intake();
     private Claw claw = new Claw();
+    private Plane plane = new Plane();
+    private Climb climb = new Climb();
 
     private VisionPortal visionPortal;
     private AprilTagProcessor aprilTag;
@@ -56,6 +60,9 @@ public class MainTeleopOpMode extends LinearOpMode {
 
         claw.clawServo = hardwareMap.get(CRServo.class, "Claw Servo");
         claw.wristServo = hardwareMap.get(CRServo.class, "Wrist Servo");
+
+        climb.leftClimb = hardwareMap.get(DcMotor.class, "Left Climb");
+        climb.rightClimb = hardwareMap.get(DcMotor.class, "Right Climb");
 
         double drive;
         double strafe;
@@ -98,6 +105,20 @@ public class MainTeleopOpMode extends LinearOpMode {
                 intakeSub.setServoPower(-1);
             } else {
                 intakeSub.setServoPower(0);
+            }
+
+            if(gamepad2.a) {
+                plane.setPower(1);
+            } else {
+                plane.setPower(0);
+            }
+
+            if(gamepad2.left_bumper) {
+                climb.setPower(1);
+            } else if(gamepad2.right_bumper) {
+                climb.setPower(-1);
+            } else {
+                climb.setPower(0.07);
             }
         }
     }
