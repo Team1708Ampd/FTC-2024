@@ -109,6 +109,8 @@ public class MainTeleopOpMode extends LinearOpMode {
 
             if(gamepad2.a) {
                 plane.setPower(1);
+            } else if(gamepad2.b) {
+                plane.setPower(-1);
             } else {
                 plane.setPower(0);
             }
