@@ -10,6 +10,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDir
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
+import org.firstinspires.ftc.teamcode.subsystems.Claw;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -24,7 +25,8 @@ public class MainTeleopOpMode extends LinearOpMode {
     private DcMotor backRightDrive;
     private DcMotor frontLeftDrive;
     private DcMotor backLeftDrive;
-    private Intake intakeSub;
+    private Intake intakeSub = new Intake();
+    private Claw claw = new Claw();
 
     private VisionPortal visionPortal;
     private AprilTagProcessor aprilTag;
@@ -52,6 +54,9 @@ public class MainTeleopOpMode extends LinearOpMode {
         intakeSub.intakeLeft = hardwareMap.get(CRServo.class, "Left Intake");
         intakeSub.intakeRight = hardwareMap.get(CRServo.class, "Right Intake");
 
+        claw.clawServo = hardwareMap.get(CRServo.class, "Claw Servo");
+        claw.wristServo = hardwareMap.get(CRServo.class, "Wrist Servo");
+
         double drive;
         double strafe;
         double turn;
@@ -62,6 +67,38 @@ public class MainTeleopOpMode extends LinearOpMode {
             strafe = -gamepad1.left_stick_x;
             turn   = -gamepad1.right_stick_x;
             moveRobot(drive, strafe, turn);
+
+            if(gamepad1.a) {
+                claw.setClawServo(1);
+            } else if(gamepad1.b) {
+                claw.setClawServo(-1);
+            } else {
+                claw.setClawServo(0);
+            }
+
+            if(gamepad1.x) {
+                claw.setWristServo(1);
+            } else if(gamepad1.y) {
+                claw.setWristServo(-1);
+            } else {
+                claw.setWristServo(0);
+            }
+
+            if(gamepad1.back) {
+                intakeSub.setPower(1);
+            } else if(gamepad1.start) {
+                intakeSub.setPower(-1);
+            } else {
+                intakeSub.setPower(0);
+            }
+
+            if(gamepad1.left_bumper) {
+                intakeSub.setServoPower(1);
+            } else if(gamepad1.right_bumper) {
+                intakeSub.setServoPower(-1);
+            } else {
+                intakeSub.setServoPower(0);
+            }
         }
     }
 
