@@ -13,6 +13,6 @@ public class Claw {
     }
 
     public void setWristServo(double power) {
-        clawServo.setPower(power);
+        wristServo.setPower(power);
     }
 }

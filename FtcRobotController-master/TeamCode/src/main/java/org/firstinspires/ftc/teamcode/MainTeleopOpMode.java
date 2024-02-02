@@ -11,7 +11,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.teamcode.subsystems.Claw;
-import org.firstinspires.ftc.teamcode.subsystems.Climb;
+import org.firstinspires.ftc.teamcode.subsystems.Elevator;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Plane;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -20,7 +20,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.concurrent.TimeUnit;
 
-@TeleOp(name = "Main Teleop OPMode")
+@TeleOp(name = "Main Teleop Mode", group = "2024")
 public class MainTeleopOpMode extends LinearOpMode {
 
     private DcMotor frontRightDrive;
@@ -30,7 +30,7 @@ public class MainTeleopOpMode extends LinearOpMode {
     private Intake intakeSub = new Intake();
     private Claw claw = new Claw();
     private Plane plane = new Plane();
-    private Climb climb = new Climb();
+    private Elevator elevator = new Elevator();
 
     private VisionPortal visionPortal;
     private AprilTagProcessor aprilTag;
@@ -49,31 +49,35 @@ public class MainTeleopOpMode extends LinearOpMode {
         frontLeftDrive = hardwareMap.get(DcMotor.class, "Front Left");
         backLeftDrive = hardwareMap.get(DcMotor.class, "Back Left");
 
-        frontRightDrive.setDirection(DcMotorSimple.Direction.FORWARD);
-        backRightDrive.setDirection(DcMotorSimple.Direction.FORWARD);
-        frontLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-        backLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontRightDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        backRightDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontLeftDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+        backLeftDrive.setDirection(DcMotorSimple.Direction.FORWARD);
 
         intakeSub.intakeMotor = hardwareMap.get(DcMotor.class, "Intake Motor");
         intakeSub.intakeLeft = hardwareMap.get(CRServo.class, "Left Intake");
         intakeSub.intakeRight = hardwareMap.get(CRServo.class, "Right Intake");
+        intakeSub.intakeLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
         claw.clawServo = hardwareMap.get(CRServo.class, "Claw Servo");
         claw.wristServo = hardwareMap.get(CRServo.class, "Wrist Servo");
 
-        climb.leftClimb = hardwareMap.get(DcMotor.class, "Left Climb");
-        climb.rightClimb = hardwareMap.get(DcMotor.class, "Right Climb");
+        plane.planeServo = hardwareMap.get(CRServo.class, "Plane");
 
-        double drive;
-        double strafe;
-        double turn;
+        elevator.leftElevator = hardwareMap.get(DcMotor.class, "Left Elevator");
+        elevator.rightElevator = hardwareMap.get(DcMotor.class, "Right Elevator");
+        elevator.leftElevator.setDirection(DcMotorSimple.Direction.REVERSE);
+        elevator.leftElevator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        elevator.rightElevator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        double y, x, rx;
 
         waitForStart();
         while(opModeIsActive()) {
-            drive  = -gamepad1.left_stick_y;
-            strafe = -gamepad1.left_stick_x;
-            turn   = -gamepad1.right_stick_x;
-            moveRobot(drive, strafe, turn);
+            y = -gamepad1.left_stick_y;
+            x = gamepad1.left_stick_x;
+            rx   = -gamepad1.right_stick_x;
+            moveRobot(y, x, rx);
 
             if(gamepad1.a) {
                 claw.setClawServo(1);
@@ -100,8 +104,16 @@ public class MainTeleopOpMode extends LinearOpMode {
             }
 
             if(gamepad1.left_bumper) {
+                elevator.setPower(1);
+            } else if (gamepad1.right_bumper) {
+                elevator.setPower(-1);
+            } else {
+                elevator.setPower(0);
+            }
+
+            if(gamepad2.left_bumper) {
                 intakeSub.setServoPower(1);
-            } else if(gamepad1.right_bumper) {
+            } else if(gamepad2.right_bumper) {
                 intakeSub.setServoPower(-1);
             } else {
                 intakeSub.setServoPower(0);
@@ -114,41 +126,20 @@ public class MainTeleopOpMode extends LinearOpMode {
             } else {
                 plane.setPower(0);
             }
-
-            if(gamepad2.left_bumper) {
-                climb.setPower(1);
-            } else if(gamepad2.right_bumper) {
-                climb.setPower(-1);
-            } else {
-                climb.setPower(0.07);
-            }
         }
     }
 
-    public void moveRobot(double x, double y, double yaw) {
-        // Calculate wheel powers.
-        double leftFrontPower    =  x -y -yaw;
-        double rightFrontPower   =  x +y +yaw;
-        double leftBackPower     =  x +y -yaw;
-        double rightBackPower    =  x -y +yaw;
+    public void moveRobot(double y, double x, double rx) {
+        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+        double frontLeftPower = (y + x + rx) / denominator;
+        double backLeftPower = (y - x + rx) / denominator;
+        double frontRightPower = (y - x - rx) / denominator;
+        double backRightPower = (y + x - rx) / denominator;
 
-        // Normalize wheel powers to be less than 1.0
-        double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
-        max = Math.max(max, Math.abs(leftBackPower));
-        max = Math.max(max, Math.abs(rightBackPower));
-
-        if (max > 1.0) {
-            leftFrontPower /= max;
-            rightFrontPower /= max;
-            leftBackPower /= max;
-            rightBackPower /= max;
-        }
-
-        // Send powers to the wheels.
-        frontLeftDrive.setPower(leftFrontPower);
-        frontRightDrive.setPower(rightFrontPower);
-        backLeftDrive.setPower(leftBackPower);
-        backRightDrive.setPower(rightBackPower);
+        frontLeftDrive.setPower(frontLeftPower);
+        backLeftDrive.setPower(backLeftPower);
+        frontRightDrive.setPower(frontRightPower);
+        backRightDrive.setPower(backRightPower);
     }
 
     private void initAprilTag() {
@@ -173,7 +164,7 @@ public class MainTeleopOpMode extends LinearOpMode {
      Manually set the camera gain and exposure.
      This can only be called AFTER calling initAprilTag(), and only works for Webcams;
     */
-    private void    setManualExposure(int exposureMS, int gain) {
+    private void setManualExposure(int exposureMS, int gain) {
         // Wait for the camera to be open, then use the controls
 
         if (visionPortal == null) {
