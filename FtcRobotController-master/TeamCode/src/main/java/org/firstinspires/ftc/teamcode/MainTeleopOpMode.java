@@ -74,54 +74,38 @@ public class MainTeleopOpMode extends LinearOpMode {
 
         waitForStart();
         while(opModeIsActive()) {
-            y = -gamepad1.left_stick_y;
+            y = gamepad1.left_stick_y;
             x = gamepad1.left_stick_x;
-            rx   = -gamepad1.right_stick_x;
-            moveRobot(y, x, rx);
+            moveRobot(y, x);
 
-            if(gamepad1.a) {
-                claw.setClawServo(1);
-            } else if(gamepad1.b) {
-                claw.setClawServo(-1);
-            } else {
-                claw.setClawServo(0);
-            }
 
-            if(gamepad1.x) {
+            if(gamepad2.y) {
                 claw.setWristServo(1);
-            } else if(gamepad1.y) {
+            } else if(gamepad2.b) {
                 claw.setWristServo(-1);
             } else {
                 claw.setWristServo(0);
             }
 
-            if(gamepad1.back) {
+            if(gamepad1.x) {
                 intakeSub.setPower(1);
-            } else if(gamepad1.start) {
+            } else if(gamepad1.a) {
                 intakeSub.setPower(-1);
             } else {
                 intakeSub.setPower(0);
             }
 
-            if(gamepad1.left_bumper) {
+            if(gamepad2.left_bumper) {
                 elevator.setPower(1);
-            } else if (gamepad1.right_bumper) {
+            } else if (gamepad2.right_bumper) {
                 elevator.setPower(-1);
             } else {
                 elevator.setPower(0);
             }
 
-            if(gamepad2.left_bumper) {
-                intakeSub.setServoPower(1);
-            } else if(gamepad2.right_bumper) {
-                intakeSub.setServoPower(-1);
-            } else {
-                intakeSub.setServoPower(0);
-            }
-
-            if(gamepad2.a) {
+            if(gamepad1.start) {
                 plane.setPower(1);
-            } else if(gamepad2.b) {
+            } else if(gamepad1.back) {
                 plane.setPower(-1);
             } else {
                 plane.setPower(0);
@@ -129,12 +113,12 @@ public class MainTeleopOpMode extends LinearOpMode {
         }
     }
 
-    public void moveRobot(double y, double x, double rx) {
-        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-        double frontLeftPower = (y + x + rx) / denominator;
-        double backLeftPower = (y - x + rx) / denominator;
-        double frontRightPower = (y - x - rx) / denominator;
-        double backRightPower = (y + x - rx) / denominator;
+    public void moveRobot(double y, double x) {
+        double denominator = Math.max(Math.abs(y) + Math.abs(x), 1);
+        double frontLeftPower = (y + x) / denominator;
+        double backLeftPower = (y - x) / denominator;
+        double frontRightPower = (y - x) / denominator;
+        double backRightPower = (y + x) / denominator;
 
         frontLeftDrive.setPower(frontLeftPower);
         backLeftDrive.setPower(backLeftPower);
