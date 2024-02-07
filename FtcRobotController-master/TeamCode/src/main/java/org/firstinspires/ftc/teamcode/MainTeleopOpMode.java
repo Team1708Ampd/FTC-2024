@@ -75,8 +75,8 @@ public class MainTeleopOpMode extends LinearOpMode {
         waitForStart();
         while(opModeIsActive()) {
             y = gamepad1.left_stick_y;
-            x = gamepad1.left_stick_x;
-            moveRobot(y, x);
+            rx   = -gamepad1.right_stick_x;
+            moveRobot(y, rx);
 
 
             if(gamepad2.y) {
@@ -113,12 +113,12 @@ public class MainTeleopOpMode extends LinearOpMode {
         }
     }
 
-    public void moveRobot(double y, double x) {
-        double denominator = Math.max(Math.abs(y) + Math.abs(x), 1);
-        double frontLeftPower = (y + x) / denominator;
-        double backLeftPower = (y - x) / denominator;
-        double frontRightPower = (y - x) / denominator;
-        double backRightPower = (y + x) / denominator;
+    public void moveRobot(double y, double rx) {
+        double denominator = Math.max(Math.abs(y) + Math.abs(rx), 1);
+        double frontLeftPower = (y + rx) / denominator;
+        double backLeftPower = (y + rx) / denominator;
+        double frontRightPower = (y - rx) / denominator;
+        double backRightPower = (y - rx) / denominator;
 
         frontLeftDrive.setPower(frontLeftPower);
         backLeftDrive.setPower(backLeftPower);
