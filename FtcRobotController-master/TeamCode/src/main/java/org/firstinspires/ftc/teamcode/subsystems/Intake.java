@@ -12,6 +12,15 @@ public class Intake {
     public CRServo intakeLeft;
     public CRServo intakeRight;
 
+    public Intake(HardwareMap hm, String leftmotorname, String rightmotorname, String mainmotorname)
+    {
+        intakeLeft = hm.get(CRServo.class, leftmotorname);
+        intakeRight = hm.get(CRServo.class, rightmotorname);
+        intakeMotor = hm.get(DcMotor.class, mainmotorname);
+
+        intakeLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+    }
+
     public class SetMainIntake implements Action
     {
         private boolean initialized = false;

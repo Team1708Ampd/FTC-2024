@@ -5,6 +5,11 @@ import com.qualcomm.robotcore.hardware.CRServo;
 public class Plane {
     public CRServo planeServo;
 
+    public Plane(HardwareMap hm, String planename)
+    {
+        planeServo = hm.get(CRServo.class, planename);
+    }
+
     public class RunPlane implements Action
     {
         private boolean initialized = false;

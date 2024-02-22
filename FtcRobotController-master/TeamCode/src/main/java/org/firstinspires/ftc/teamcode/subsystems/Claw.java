@@ -10,6 +10,12 @@ public class Claw {
     public CRServo wristServo;
     public CRServo clawServo;
 
+    public Claw(HardwareMap hm, String wristname, String clawname)
+    {
+        clawServo = hm.get(CRServo.class, clawname);
+        wristServo = hm.get(CRServo.class, wristname);
+    }
+
     public class OpenClaw implements Action
     {
         private boolean initialized = false;

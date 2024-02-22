@@ -8,6 +8,16 @@ public class Elevator {
     public DcMotor leftElevator;
     public DcMotor rightElevator;
 
+    public Elevator(HardwareMap hm, String leftmotorname, String rightmotorname)
+    {
+        leftElevator = hm.get(DcMotor.class, leftmotorname);
+        rightElevator = hm.get(DcMotor.class, rightmotorname);
+
+        leftElevator.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftElevator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightElevator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+
     public class MoveElevator implements Action
     {
         private boolean initialized = false;
